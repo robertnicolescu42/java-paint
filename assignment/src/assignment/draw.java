@@ -15,6 +15,9 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JColorChooser;
 
@@ -28,11 +31,13 @@ public class draw extends Frame implements ActionListener{
 	Button b4; //filled oval
 	Button b5; //this dumps the shapes to the console
 	int x1, y1, x2, y2;
+	int n = 0;
 	Panel p;
 	String currentButton;
 	Color newColor; //this parameter changes when the color is changed using the color picker
-	GEShape[] arr;
-	public static int n = 1;
+    GEShape shape;
+	GEShape arr[];
+	java.awt.List l;
 	
 	public draw() {
 		p = new Panel();
@@ -48,51 +53,53 @@ public class draw extends Frame implements ActionListener{
             }});
         addMouseListener(mouseHandler);
 		addMouseMotionListener(mouseMotionHandler);
-		b1 = new Button("Color selector");
-		b2 = new Button("Outlined rectangle");
-		b3 = new Button("Outlined oval");
-		b4 = new Button("Filled oval");
-		b5 = new Button("Dump shapes to console");
-		p.add(b1);
-		p.add(b2);
-		p.add(b3);
-		p.add(b4);
-		p.add(b5);
-		add(p);
+		l= new java.awt.List(5);
+		l.add("Color selector");
+		l.add("Outlined rectangle");
+		l.add("Outlined oval");
+		l.add("Filled oval");
+		l.add("Dump shapes to console");
+		add(l);
 		currentButton = "b2"; //the default selected shape is the rectangle
 		newColor = Color.black;
-		b1.addActionListener(this);
-		b2.addActionListener(this);
-		b3.addActionListener(this);
-		b4.addActionListener(this);
+		l.addActionListener(this);
 		arr = new GEShape[n];
 		setVisible(true);
 	}
 
+    public static GEShape[] addX(int n, GEShape arr[], GEShape x) 
+    {
+        List<GEShape> arrlist = new ArrayList<GEShape>(Arrays.asList(arr)); 
+  
+        arrlist.add(x); 
+        arr = arrlist.toArray(arr); 
+        return arr; 
+    } 
 	
+
 	 public void actionPerformed(ActionEvent e) {
-	     if (e.getSource() == b1) {
+	     if (l.getSelectedIndex() == 0) {
 	       //here we don't set the currentbutton to b1 to preserve the currently selected shape
-	       newColor = JColorChooser.showDialog(null, "Choose a color", Color.RED);	       
+	       newColor = JColorChooser.showDialog(null, "Choose a color", Color.RED);
 	     }
-	     if (e.getSource() == b2) {
+	     if (l.getSelectedIndex() == 1) {
 		   currentButton = "b2";
 	     }
-	     if (e.getSource() == b3) {
+	     if (l.getSelectedIndex() == 2) {
 		   currentButton = "b3";
 	     }
-	     if (e.getSource() == b4) {
+	     if (l.getSelectedIndex() == 3) {
 	       currentButton = "b4";
 	     }
-	     
-	     if (e.getSource() == b5) {
+	     if (l.getSelectedIndex() == 4) {
 	    	 System.out.println("outputting the shapes:");
-	    	 for(GEShape i: arr) {
+
+	    	 for (GEShape i: arr) {
 	    		 System.out.println(i);
 	    	 }
+			}
 	     }
-		     
-	   }
+		   
 	
     public MouseListener mouseHandler = new MouseAdapter() {
     	@Override
@@ -108,6 +115,7 @@ public class draw extends Frame implements ActionListener{
 			x2 = e.getX();
 			y2 = e.getY();
 			repaint();
+			arr = addX(n,arr,shape);
 		}
 	};
 	
@@ -123,10 +131,10 @@ public class draw extends Frame implements ActionListener{
 	   public void paint(Graphics g) {
 		 super.paint(g);
 		 g.setColor(newColor);
-		 GEShape shape = null;
+		 shape = null;
 		 if(currentButton == "b2") {
 		 outlinedRectangle r = new outlinedRectangle();
-		 r.drawShape(g,x1,x2,y1,y2);
+		 r.drawShape(g, x1, x2, y1, y2);
 		 shape = r;
 		 }
 		 
@@ -141,6 +149,9 @@ public class draw extends Frame implements ActionListener{
 		 o.drawShape(g, x1, x2, y1, y2);
 		 shape = o;
 		 }
+		 
+		 
+		 
      }
 	public static void main(String[] args) {
 		new draw();
